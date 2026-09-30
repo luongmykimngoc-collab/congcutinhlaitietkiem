@@ -9,7 +9,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("💰 Máy tính lãi tiền gửi tiết kiệm")
+st.title("💰APP TÍNH TIỀN GỬI TIẾT KIỆM KN")
 st.caption("Tính lãi đơn và lãi kép theo số tiền, kỳ hạn, lãi suất và hình thức nhận lãi.")
 
 # =========================
