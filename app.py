@@ -9,7 +9,7 @@ st.set_page_config(
     layout="centered"
 )
 
-st.title("💰APP TÍNH TIỀN GỬI TIẾT KIỆM KN")
+st.title("💰APP TÍNH TIỀN GỬI TIẾT KIỆM_LƯƠNG MỸ KIM NGỌC")
 st.caption("Tính lãi đơn và lãi kép theo số tiền, kỳ hạn, lãi suất và hình thức nhận lãi.")
 
 # =========================
