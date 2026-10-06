@@ -1,6 +1,4 @@
-
 import streamlit as st
-import math
 
 # =========================
 # CẤU HÌNH TRANG
@@ -95,9 +93,10 @@ lai_suat = st.number_input(
 
 st.divider()
 
-# =========================
+
+# =========================================================
 # TÍNH TOÁN TIỀN GỬI
-# =========================
+# =========================================================
 
 if st.button(
     "🧮 Tính lãi",
@@ -303,19 +302,21 @@ if st.button(
 st.divider()
 
 st.header("🎯 2. Visualizing Financial Goals")
+
 st.caption(
     "Biến mục tiêu tài chính thành một kế hoạch tiết kiệm cụ thể."
 )
 
 st.write(
-    "Thay vì chỉ nhìn vào một con số lớn, hãy chọn mục tiêu "
-    "và để ứng dụng tính ngược số tiền bạn cần tiết kiệm "
+    "Chọn mục tiêu, thời gian, hình thức tính lãi và tần suất "
+    "tiết kiệm để biết bạn cần dành ra bao nhiêu tiền "
     "mỗi ngày, mỗi tuần hoặc mỗi tháng."
 )
 
-# =========================
+
+# =========================================================
 # DANH SÁCH MỤC TIÊU
-# =========================
+# =========================================================
 
 muc_tieu = {
 
@@ -344,18 +345,20 @@ muc_tieu = {
         100_000_000
 }
 
-# =========================
+
+# =========================================================
 # CHỌN MỤC TIÊU
-# =========================
+# =========================================================
 
 muc_tieu_chon = st.selectbox(
     "🎯 Bạn đang muốn tiết kiệm cho mục tiêu nào?",
     list(muc_tieu.keys())
 )
 
-# =========================
+
+# =========================================================
 # SỐ TIỀN MỤC TIÊU
-# =========================
+# =========================================================
 
 if muc_tieu_chon == "💰 Mục tiêu khác":
 
@@ -377,9 +380,10 @@ else:
         format="%.0f"
     )
 
-# =========================
-# THỜI GIAN
-# =========================
+
+# =========================================================
+# THỜI GIAN + LÃI SUẤT
+# =========================================================
 
 col1, col2 = st.columns(2)
 
@@ -404,9 +408,40 @@ with col2:
         format="%.2f"
     )
 
-# =========================
+
+# =========================================================
+# CHỌN PHƯƠNG PHÁP TÍNH LÃI
+# =========================================================
+
+st.subheader("📈 Phương pháp tính lãi")
+
+loai_lai_muc_tieu = st.radio(
+    "Bạn muốn áp dụng loại lãi suất nào cho mục tiêu?",
+    [
+        "Lãi đơn",
+        "Lãi kép"
+    ],
+    horizontal=True
+)
+
+if loai_lai_muc_tieu == "Lãi đơn":
+
+    st.info(
+        "📌 Lãi đơn: tiền lãi chỉ được tính trên số vốn gốc "
+        "ban đầu, không cộng lãi vào vốn để tiếp tục sinh lãi."
+    )
+
+else:
+
+    st.info(
+        "📌 Lãi kép: tiền lãi được nhập vào vốn và tiếp tục "
+        "sinh lãi trong các kỳ tiếp theo."
+    )
+
+
+# =========================================================
 # VỐN BAN ĐẦU
-# =========================
+# =========================================================
 
 von_ban_dau = st.number_input(
     "💰 Số tiền bạn đã có sẵn (VNĐ)",
@@ -416,9 +451,10 @@ von_ban_dau = st.number_input(
     format="%.0f"
 )
 
-# =========================
+
+# =========================================================
 # TẦN SUẤT TIẾT KIỆM
-# =========================
+# =========================================================
 
 tan_suat = st.selectbox(
     "📅 Bạn muốn tiết kiệm bao nhiêu lần?",
@@ -429,8 +465,9 @@ tan_suat = st.selectbox(
     ]
 )
 
+
 # =========================================================
-# TÍNH SỐ TIỀN CẦN TIẾT KIỆM
+# TÍNH KẾ HOẠCH
 # =========================================================
 
 if st.button(
@@ -456,13 +493,16 @@ if st.button(
             lai_suat_muc_tieu / 100
         )
 
-        # =========================
-        # XÁC ĐỊNH SỐ KỲ
-        # =========================
+        # =================================================
+        # XÁC ĐỊNH SỐ KỲ VÀ LÃI SUẤT MỖI KỲ
+        # =================================================
 
         if tan_suat == "Mỗi ngày":
 
-            so_ky = int(round(so_nam * 365))
+            so_ky = max(
+                1,
+                int(round(so_nam * 365))
+            )
 
             lai_suat_ky = (
                 lai_suat_nam_decimal / 365
@@ -470,7 +510,10 @@ if st.button(
 
         elif tan_suat == "Mỗi tuần":
 
-            so_ky = int(round(so_nam * 52))
+            so_ky = max(
+                1,
+                int(round(so_nam * 52))
+            )
 
             lai_suat_ky = (
                 lai_suat_nam_decimal / 52
@@ -478,90 +521,211 @@ if st.button(
 
         else:
 
-            so_ky = int(round(so_nam * 12))
+            so_ky = max(
+                1,
+                int(round(so_nam * 12))
+            )
 
             lai_suat_ky = (
                 lai_suat_nam_decimal / 12
             )
 
-        # =========================
-        # GIÁ TRỊ VỐN BAN ĐẦU
-        # SAU KHI TÍCH LŨY
-        # =========================
 
-        gia_tri_von_ban_dau = (
-            von_ban_dau
-            * ((1 + lai_suat_ky) ** so_ky)
-        )
+        # =================================================
+        # LÃI ĐƠN
+        # =================================================
 
-        so_tien_con_thieu = (
-            so_tien_muc_tieu
-            - gia_tri_von_ban_dau
-        )
+        if loai_lai_muc_tieu == "Lãi đơn":
 
-        # =========================
-        # TÍNH TIỀN TIẾT KIỆM ĐỊNH KỲ
-        # =========================
+            # ---------------------------------------------
+            # Lãi đơn trên vốn ban đầu
+            # ---------------------------------------------
 
-        if so_tien_con_thieu <= 0:
-
-            tien_moi_ky = 0
-
-        elif lai_suat_ky == 0:
-
-            tien_moi_ky = (
-                so_tien_con_thieu / so_ky
+            lai_von_ban_dau = (
+                von_ban_dau
+                * lai_suat_ky
+                * so_ky
             )
+
+            gia_tri_von_ban_dau = (
+                von_ban_dau
+                + lai_von_ban_dau
+            )
+
+            so_tien_con_thieu = (
+                so_tien_muc_tieu
+                - gia_tri_von_ban_dau
+            )
+
+            if so_tien_con_thieu <= 0:
+
+                tien_moi_ky = 0
+
+                tong_tien_tu_tiet_kiem = 0
+
+                tong_von_bo_vao = von_ban_dau
+
+                tien_lai_du_kien = lai_von_ban_dau
+
+                tong_tien_dat_duoc = (
+                    von_ban_dau
+                    + lai_von_ban_dau
+                )
+
+            else:
+
+                # -----------------------------------------
+                # Với lãi đơn:
+                #
+                # Mỗi khoản tiết kiệm định kỳ được giả định
+                # nhận lãi đơn theo thời gian còn lại.
+                # -----------------------------------------
+
+                if lai_suat_ky == 0:
+
+                    he_so_tich_luy = so_ky
+
+                else:
+
+                    he_so_tich_luy = sum(
+                        1 + lai_suat_ky * (so_ky - i)
+                        for i in range(1, so_ky + 1)
+                    )
+
+                tien_moi_ky = (
+                    so_tien_con_thieu
+                    / he_so_tich_luy
+                )
+
+                tong_tien_tu_tiet_kiem = (
+                    tien_moi_ky * so_ky
+                )
+
+                tong_von_bo_vao = (
+                    von_ban_dau
+                    + tong_tien_tu_tiet_kiem
+                )
+
+                lai_tu_tiet_kiem_dinh_ky = (
+                    tien_moi_ky
+                    * sum(
+                        lai_suat_ky * (so_ky - i)
+                        for i in range(1, so_ky + 1)
+                    )
+                )
+
+                tien_lai_du_kien = (
+                    lai_von_ban_dau
+                    + lai_tu_tiet_kiem_dinh_ky
+                )
+
+                tong_tien_dat_duoc = (
+                    tong_von_bo_vao
+                    + tien_lai_du_kien
+                )
+
+
+        # =================================================
+        # LÃI KÉP
+        # =================================================
 
         else:
 
-            tien_moi_ky = (
-                so_tien_con_thieu
-                * lai_suat_ky
-                / (
-                    (1 + lai_suat_ky) ** so_ky
-                    - 1
+            # ---------------------------------------------
+            # Giá trị vốn ban đầu sau toàn bộ thời gian
+            # ---------------------------------------------
+
+            gia_tri_von_ban_dau = (
+                von_ban_dau
+                * ((1 + lai_suat_ky) ** so_ky)
+            )
+
+            so_tien_con_thieu = (
+                so_tien_muc_tieu
+                - gia_tri_von_ban_dau
+            )
+
+            # ---------------------------------------------
+            # Tính khoản tiết kiệm định kỳ
+            # ---------------------------------------------
+
+            if so_tien_con_thieu <= 0:
+
+                tien_moi_ky = 0
+
+            elif lai_suat_ky == 0:
+
+                tien_moi_ky = (
+                    so_tien_con_thieu
+                    / so_ky
                 )
+
+            else:
+
+                tien_moi_ky = (
+                    so_tien_con_thieu
+                    * lai_suat_ky
+                    / (
+                        (1 + lai_suat_ky) ** so_ky
+                        - 1
+                    )
+                )
+
+            # ---------------------------------------------
+            # Tổng tiền tự tiết kiệm
+            # ---------------------------------------------
+
+            tong_tien_tu_tiet_kiem = (
+                tien_moi_ky * so_ky
             )
 
-        # =========================
-        # TỔNG TIỀN TỰ TIẾT KIỆM
-        # =========================
+            # ---------------------------------------------
+            # Giá trị cuối kỳ
+            # ---------------------------------------------
 
-        tong_tien_tu_tiet_kiem = (
-            tien_moi_ky * so_ky
-        )
+            if lai_suat_ky != 0:
 
-        # =========================
-        # TIỀN LÃI DỰ KIẾN
-        # =========================
+                gia_tri_tiet_kiem_dinh_ky = (
+                    tien_moi_ky
+                    * (
+                        ((1 + lai_suat_ky) ** so_ky - 1)
+                        / lai_suat_ky
+                    )
+                )
 
-        tong_tien_dat_duoc = (
-            gia_tri_von_ban_dau
-            + tien_moi_ky
-            * (
-                ((1 + lai_suat_ky) ** so_ky - 1)
-                / lai_suat_ky
+            else:
+
+                gia_tri_tiet_kiem_dinh_ky = (
+                    tong_tien_tu_tiet_kiem
+                )
+
+            tong_tien_dat_duoc = (
+                gia_tri_von_ban_dau
+                + gia_tri_tiet_kiem_dinh_ky
             )
-            if lai_suat_ky != 0
-            else
-            gia_tri_von_ban_dau
-            + tong_tien_tu_tiet_kiem
-        )
 
-        tong_von_bo_vao = (
-            von_ban_dau
-            + tong_tien_tu_tiet_kiem
-        )
+            # ---------------------------------------------
+            # Tổng vốn thực bỏ vào
+            # ---------------------------------------------
 
-        tien_lai_du_kien = (
-            tong_tien_dat_duoc
-            - tong_von_bo_vao
-        )
+            tong_von_bo_vao = (
+                von_ban_dau
+                + tong_tien_tu_tiet_kiem
+            )
 
-        # =========================
-        # QUY ĐỔI THEO NGÀY/TUẦN/THÁNG
-        # =========================
+            # ---------------------------------------------
+            # Tổng tiền lãi
+            # ---------------------------------------------
+
+            tien_lai_du_kien = (
+                tong_tien_dat_duoc
+                - tong_von_bo_vao
+            )
+
+
+        # =================================================
+        # QUY ĐỔI SỐ TIỀN TIẾT KIỆM
+        # =================================================
 
         tien_moi_ngay = (
             tien_moi_ky
@@ -587,24 +751,39 @@ if st.button(
             else tien_moi_ky * 4.345
         )
 
-        # =========================
+
+        # =================================================
         # HIỂN THỊ MỤC TIÊU
-        # =========================
+        # =================================================
 
         st.success(
             f"🎯 Mục tiêu: **{muc_tieu_chon}**"
         )
 
-        st.metric(
-            "💎 Số tiền mục tiêu",
-            format_money(so_tien_muc_tieu)
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            st.metric(
+                "💎 Số tiền mục tiêu",
+                format_money(so_tien_muc_tieu)
+            )
+
+        with col2:
+
+            st.metric(
+                "📈 Phương pháp tính lãi",
+                loai_lai_muc_tieu
+            )
+
+
+        # =================================================
+        # KẾ HOẠCH TIẾT KIỆM
+        # =================================================
+
+        st.subheader(
+            "💡 Kế hoạch tiết kiệm của bạn"
         )
-
-        # =========================
-        # KẾT QUẢ CHÍNH
-        # =========================
-
-        st.subheader("💡 Kế hoạch tiết kiệm của bạn")
 
         col1, col2, col3 = st.columns(3)
 
@@ -629,13 +808,16 @@ if st.button(
                 format_money(tien_moi_thang)
             )
 
-        # =========================
+
+        # =================================================
         # PHÂN TÍCH TÀI CHÍNH
-        # =========================
+        # =================================================
 
         st.divider()
 
-        st.subheader("📊 Phân tích mục tiêu")
+        st.subheader(
+            "📊 Phân tích mục tiêu"
+        )
 
         col1, col2, col3 = st.columns(3)
 
@@ -660,43 +842,81 @@ if st.button(
                 format_money(tong_tien_dat_duoc)
             )
 
-        # =========================
-        # TIẾN ĐỘ MỤC TIÊU
-        # =========================
+
+        # =================================================
+        # PHÂN TÍCH HIỆU QUẢ LÃI SUẤT
+        # =================================================
 
         st.divider()
 
-        st.subheader("🚀 Tiến độ thực hiện mục tiêu")
+        st.subheader(
+            "📈 Hiệu quả của lãi suất"
+        )
+
+        if tong_tien_dat_duoc > 0:
+
+            ty_le_lai = (
+                tien_lai_du_kien
+                / tong_tien_dat_duoc
+                * 100
+            )
+
+            st.write(
+                f"💡 Trong tổng giá trị cuối kỳ "
+                f"**{format_money(tong_tien_dat_duoc)}**, "
+                f"phần tiền lãi chiếm khoảng "
+                f"**{ty_le_lai:.2f}%**."
+            )
+
+            if loai_lai_muc_tieu == "Lãi kép":
+
+                st.success(
+                    "🚀 Lãi kép giúp tiền lãi tiếp tục sinh ra "
+                    "lãi trong các kỳ tiếp theo. Thời gian càng "
+                    "dài, hiệu ứng tích lũy càng rõ."
+                )
+
+            else:
+
+                st.info(
+                    "📌 Với lãi đơn, tiền lãi được tính dựa "
+                    "trên vốn gốc nên mức tăng trưởng ổn định "
+                    "và không có hiệu ứng lãi trên lãi."
+                )
+
+
+        # =================================================
+        # TIẾN ĐỘ MỤC TIÊU
+        # =================================================
+
+        st.divider()
+
+        st.subheader(
+            "🚀 Tiến độ thực hiện mục tiêu"
+        )
 
         if so_tien_muc_tieu > 0:
 
-            phan_tram_tien_goc = min(
-                tong_von_bo_vao
-                / so_tien_muc_tieu
-                * 100,
-                100
-            )
-
-            phan_tram_lai = min(
-                tien_lai_du_kien
+            phan_tram_muc_tieu = min(
+                tong_tien_dat_duoc
                 / so_tien_muc_tieu
                 * 100,
                 100
             )
 
             st.progress(
-                int(phan_tram_tien_goc)
+                int(phan_tram_muc_tieu)
             )
 
             st.write(
-                f"Bạn đang xây dựng mục tiêu với "
-                f"**{phan_tram_tien_goc:.1f}%** giá trị mục tiêu "
-                f"từ số tiền tự tiết kiệm."
+                f"📊 Với kế hoạch hiện tại, giá trị dự kiến "
+                f"đạt **{phan_tram_muc_tieu:.1f}%** mục tiêu."
             )
 
-        # =========================
+
+        # =================================================
         # THÔNG ĐIỆP ĐỘNG LỰC
-        # =========================
+        # =================================================
 
         st.divider()
 
@@ -704,11 +924,11 @@ if st.button(
 
             st.info(
                 f"💡 Với kế hoạch này, bạn dự kiến tự tích lũy "
-                f"{format_money(tong_von_bo_vao)} và có thêm "
-                f"{format_money(tien_lai_du_kien)} tiền lãi. "
+                f"**{format_money(tong_von_bo_vao)}** và có thêm "
+                f"**{format_money(tien_lai_du_kien)}** tiền lãi. "
                 f"Nhờ đó có thể đạt khoảng "
-                f"{format_money(tong_tien_dat_duoc)} sau "
-                f"{so_nam:g} năm."
+                f"**{format_money(tong_tien_dat_duoc)}** sau "
+                f"**{so_nam:g} năm**."
             )
 
         else:
@@ -718,12 +938,15 @@ if st.button(
                 "để tiến gần hơn đến mục tiêu tài chính của bạn."
             )
 
-        # =========================
+
+        # =================================================
         # GHI CHÚ
-        # =========================
+        # =================================================
 
         st.caption(
             "⚠️ Đây là mô hình mô phỏng. Kết quả thực tế có thể "
             "khác do lãi suất ngân hàng, thời điểm gửi tiền, "
-            "cách nhập lãi và số ngày thực tế trong năm."
+            "cách nhập lãi và số ngày thực tế trong năm. "
+            "Khoản tiết kiệm định kỳ được giả định đóng vào "
+            "cuối mỗi kỳ."
         )
