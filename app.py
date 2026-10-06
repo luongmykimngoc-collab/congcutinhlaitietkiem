@@ -727,4 +727,3 @@ if st.button(
             "khác do lãi suất ngân hàng, thời điểm gửi tiền, "
             "cách nhập lãi và số ngày thực tế trong năm."
         )
-```
